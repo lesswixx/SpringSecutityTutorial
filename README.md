@@ -60,7 +60,7 @@ UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
 
 В данном проекте будет использоваться сборка **Maven**
 
-![](png/shot2024-02-25 162703.png)
+![](png/shot2024-02-25162703.png)
 
 Под **GroupId** подразумевается уникальный идентификатор компании (или ваше личное доменное имя), которая выпускает проект. **ArtefactId** – это просто название нашего проекта.
 
