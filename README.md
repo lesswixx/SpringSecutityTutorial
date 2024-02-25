@@ -60,4 +60,4 @@ UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
 
 #### В данном проекте будет использоваться сборка Maven
 
-![](C:\Users\novik\IdeaProjects\Spring Secutity Tutorial\png\k4x-yvce2pkv81gn4o-5hmxwgpo.png)
+![](png/k4x-yvce2pkv81gn4o-5hmxwgpo.png)
