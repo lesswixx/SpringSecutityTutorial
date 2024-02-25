@@ -56,3 +56,8 @@
 UserDetails loadUserByUsername(String username) throws UsernameNotFoundException 
 ```
 
+# 2. Создание нового проекта в IDE
+
+#### В данном проекте будет использоваться сборка Maven
+
+![](C:\Users\novik\IdeaProjects\Spring Secutity Tutorial\png\k4x-yvce2pkv81gn4o-5hmxwgpo.png)
