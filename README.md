@@ -52,4 +52,7 @@
 
 Для создания **UserDetails** используется интерфейс **UserDetailsService**, с единственным методом:
 
-```UserDetails loadUserByUsername(String username) throws UsernameNotFoundException ```
+```java
+UserDetails loadUserByUsername(String username) throws UsernameNotFoundException 
+```
+
