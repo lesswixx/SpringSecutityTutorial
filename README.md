@@ -67,3 +67,168 @@ UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
 ![](png/shot2024-02-25163111.png)
 
 После того как наш проект будет создан, необходимо добавить следующие зависимости: 
+<details>
+  <summary>pom.xml</summary>
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.3</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.example</groupId>
+    <artifactId>Spring_Secutity_Tutorial</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Spring Secutity Tutorial</name>
+    <description>Spring Secutity Tutorial</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot Starter Web: Упрощает создание веб-приложений на основе Spring MVC, включая RESTful приложения, с встроенным сервером (по умолчанию Tomcat). -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Starter Security: Добавляет функционал Spring Security в приложение для обеспечения аутентификации, авторизации, защиты от XSS, CSRF и др. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Starter Data JPA: Упрощает работу с базами данных через JPA, поддерживает Hibernate. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL JDBC Driver: Драйвер для подключения к базам данных PostgreSQL. -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- JSTL: JavaServer Pages Standard Tag Library, предоставляет стандартные теги для JSP. -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <!-- Tomcat Embed Jasper: Позволяет обрабатывать JSP страницы во встроенном сервере Tomcat. -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>9.0.27</version>
+        </dependency>
+
+        <!-- Spring Security Taglibs: Предоставляет теги для JSP, интегрирующиеся с Spring Security. -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
+            <version>5.2.0.RELEASE</version>
+        </dependency>
+
+        <!-- Spring Boot Devtools: Инструменты для разработчиков, включая автоматическую перезагрузку приложения при изменениях кода. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
+```
+</details>
+
+# 3. Организация структуры проекта (пакетов).
+
+```adruino
+main
+├── java
+│   └── com.example.spring_security_tutorial
+│       ├── config
+│       │   ├── MvcConfig.java
+│       │   └── WebSecurityConfig.java
+│       ├── controller
+│       │   ├── AdminController.java
+│       │   └── RegistrationController.java
+│       ├── entity
+│       │   ├── Role.java
+│       │   └── User.java
+│       ├── repository
+│       │   ├── RoleRepository.java
+│       │   └── UserRepository.java
+│       ├── service
+│       │   ├── SecurityService.java
+│       │   └── UserService.java
+│       └── SpringSecurityTutorialApplication.java
+├── resources
+│   ├── application.properties
+└── webapp
+    ├── resources
+    │   ├── css
+    │   └── js
+    └── WEB-INF
+        └── jsp
+            ├── admin.jsp
+            ├── index.jsp
+            ├── login.jsp
+            ├── news.jsp
+            └── registration.jsp
+```
+
+- **config** — классы с конфигурациями для **MVC (MvcConfig)** и безопасности (**WebSecurityConfig**);
+- **controller** — классы с контроллерами, которые будут отвечать за обработку входящих HTTP запросов;
+- **entity** — классы с моделями;
+- **repository** — Пакет для интерфейсов репозиториев, которые используют **Spring Data JPA** для обеспечения абстракции над слоем доступа к данным.;
+- **service** — Пакет содержит сервисы, которые содержат бизнес-логику приложения и вызывают методы из репозиториев для доступа к данным.;
+- **webapp\resources** — статические объекты: js, css, img;
+- **WEB-INF\jsp** — представления в виде файлов .jsp.
+
+Теперь, когда структура проекта создана, нужно заполнить файл **application.properties**
+
+Первые 3 строки содержат данные для подключения к БД (имя БД – «spring», логин и пароль). Последний 2 строки указывают путь к .jsp файлам:
+
+```
+spring.datasource.url=jdbc:postgresql://localhost/spring
+spring.datasource.username=postgres
+spring.datasource.password=password
+spring.jpa.show-sql=true
+spring.jpa.generate-ddl=false
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+
+spring.mvc.view.prefix = /WEB-INF/jsp/
+spring.mvc.view.suffix = .jsp
+```
+
+Свойство `spring.jpa.show-sql` позволяет выводить в консоль SQL-запросы, отправляемые к базе данных. Когда `spring.jpa.hibernate.ddl-auto` установлено в значение `update`, это означает, что таблицы и их поля в базе данных будут созданы или обновлены автоматически на основе сущностей (entity), определенных в приложении. Таким образом, нам нужно лишь создать базу данных с именем "spring", а остальные таблицы (пользователи, роли и связующая таблица) с их внешними ключами будут сформированы автоматически по схеме, определенной в сущностях.
+
+# 4. Добавление сущностей, контроллеров, сервисов, репозиториев и представлений.
+
+В этой статье мы уделим внимание изучению работы `Spring Security`, а не на процессе создания самого приложения.
+
+Вы можете найти полный код проекта в моем репозитории на [GitHub](https://github.com/lesswixx/SpringSecutityTutorial).
+
+
+
+
+
