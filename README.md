@@ -23,7 +23,7 @@
 1. Разъяснение ключевых аннотаций.
 2. Как создать новый проект в IDE?
 3. Организация структуры проекта (пакетов).
-4. Добавление сущностей, контроллеров, сервисов, репозиториев и представлений.
+4. Настройка Spring Security.
 5. Запуск приложения.
 
 # 1. Разъяснение ключевых аннотаций.
@@ -222,11 +222,91 @@ spring.mvc.view.suffix = .jsp
 
 Свойство `spring.jpa.show-sql` позволяет выводить в консоль SQL-запросы, отправляемые к базе данных. Когда `spring.jpa.hibernate.ddl-auto` установлено в значение `update`, это означает, что таблицы и их поля в базе данных будут созданы или обновлены автоматически на основе сущностей (entity), определенных в приложении. Таким образом, нам нужно лишь создать базу данных с именем "spring", а остальные таблицы (пользователи, роли и связующая таблица) с их внешними ключами будут сформированы автоматически по схеме, определенной в сущностях.
 
-# 4. Добавление сущностей, контроллеров, сервисов, репозиториев и представлений.
+# 4. Настройка Spring Security.
 
-В этой статье мы уделим внимание изучению работы `Spring Security`, а не на процессе создания самого приложения.
+Для того что бы начать работу со **Spring Security** необходимо добавить
+следующую зависимость в `pom.xml` :
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
 
-Вы можете найти полный код проекта в моем репозитории на [GitHub](https://github.com/lesswixx/SpringSecutityTutorial).
+Сразу же после добавления этой зависимости, в приложении автоматически будет настроена
+базовая конфигурация **Spring Security**. Она включает в себя основные механизмы аутентификации и авторизации.
+Так же будут предоставлены точки входа и выхода из системы - `/login` для входа и `/logout` для выхода из системы.
+
+Прелесть в том, что **Spring Security** хорошо интегрируется
+с другими аспектами **Spring Boot**, такими как **Spring MVC**, 
+**Spring Data** и другими. Это обеспечивает высокую гибкость 
+настройки приложения.
+
+### Рассмотрим на примере 
+`WebSecurityConfig` - данный класс настраивает безопасность
+веб-приложения с использованием. 
+Он определяет правила аутентификации и авторизации, 
+настраивает точки входа и выхода из системы, 
+а также управляет доступом к различным URL и ресурсам приложения.
+```java
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    
+    @Autowired
+    UserService userService;
+    
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .csrf()
+                .disable()
+                .authorizeRequests()
+                //Доступ только для не зарегистрированных пользователей
+                .antMatchers("/registration").not().fullyAuthenticated()
+                //Доступ только для пользователей с ролью Администратор
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/news").hasRole("USER")
+                //Доступ разрешен всем пользователей
+                .antMatchers("/", "/resources/**").permitAll()
+                //Все остальные страницы требуют аутентификации
+                .anyRequest().authenticated()
+                .and()
+                //Настройка для входа в систему
+                .formLogin()
+                .loginPage("/login")
+                //Перенарпавление на главную страницу после успешного входа
+                .defaultSuccessUrl("/")
+                .permitAll()
+                .and()
+                .logout()
+                .permitAll()
+                .logoutSuccessUrl("/");
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    
+    @Autowired
+    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
+    }
+}
+```
+Аннотации `@Configuration` и `@EnableWebSecurity` говорят Spring о том, что этот класс представляет конфигурацию Spring и активирует поддержку веб-безопасности.
+
+
+
+
+
+
+
+
+
+
+[//]: # (Вы можете найти полный код проекта в моем репозитории на [GitHub]&#40;https://github.com/lesswixx/SpringSecutityTutorial&#41;.)
 
 
 
