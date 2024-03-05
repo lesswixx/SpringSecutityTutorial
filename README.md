@@ -303,16 +303,48 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 В нашем случае в каче
 
 `auth.userDetailsService(userService) `:
-Этот вызов устанавливает сервис пользователей (userService) 
+Этот вызов устанавливает сервис пользователей (**userService**) 
 в качестве источника пользовательских данных для аутентификации. 
-Сервис пользователей должен реализовывать интерфейс UserDetailsService, 
+Сервис пользователей должен реализовывать интерфейс **UserDetailsService**, 
 который обеспечивает метод загрузки пользовательских 
 данных по имени пользователя.
+```java
+@Service
+public class UserService implements UserDetailsService {
+    
+    // остальной код...
+    
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        return user;
+    }
+    
+}
+```
+
+Метод `loadUserByUsername(String username)` сервиса пользователей (**UserService**) 
+использует репозиторий **JPA (UserRepository)** для выполнения запроса
+к базе данных и получения информации о пользователе.
+
+**UserDetails** представляет информацию о пользователе, 
+которая может быть сохранена и извлечена из базы данных с использованием **JPA**.
+
+**AuthenticationManagerBuilder** позволяет настроить механизм аутентификации 
+**Spring Security**, который использует информацию о пользователях,
+полученную из базы данных через **JPA**, для проверки подлинности пользователей.
+
+
 
 `.passwordEncoder(bCryptPasswordEncoder())`: 
-Этот вызов устанавливает объект BCryptPasswordEncoder 
+Этот вызов устанавливает объект **BCryptPasswordEncoder** 
 в качестве метода кодирования паролей. Пароли пользователей будут 
-хешироваться с использованием алгоритма BCrypt перед сохранением или 
+хешироваться с использованием алгоритма **BCrypt** перед сохранением или 
 сравнением.
 
 ### Конфигурация доступа:
@@ -324,6 +356,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 передаем пути, для которых хотим установить ограничение. 
 Затем указываем, пользователям с какой ролью будет доступна 
 эта страница/страницы.
+
 
 
 
