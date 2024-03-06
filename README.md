@@ -399,7 +399,7 @@ public class UserService implements UserDetailsService {
 
 #### Форма регистрации:
 
-![](png/shot2024-03-05234501.png)
+![](png/shot2024-03-05 234501.png)
 
 #### Вход в систему: 
 
